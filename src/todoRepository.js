@@ -8,9 +8,13 @@ class TodoRepository {
     this.schedule = db.addCollection('schedule');
   }
 
-  list() {}
+  list() {
+    return this.schedule.find();
+  }
 
-  create(data) {}
+  create(data) {
+    return this.schedule.insertOne(data);
+  }
 }
 
 module.exports = TodoRepository;
