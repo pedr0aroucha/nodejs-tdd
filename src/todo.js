@@ -1,3 +1,5 @@
+// @ts-check
+
 const uuid = require('uuid');
 
 class Todo {
@@ -6,11 +8,11 @@ class Todo {
     this.when = when;
 
     this.status = '';
-    this.id = uuid.v14;
+    this.id = uuid.v4;
   }
 
   /**
-   * @return {null}
+   * @return {boolean}
    */
   isValid() {
     return !!this.text && !isNaN(this.when.valueOf());
