@@ -3,13 +3,9 @@ class TodoService {
     this.todoRepository = todoRepository;
   }
 
-  create(data) {
-    return this.todoRepository.create(data);
-  }
+  create(data) {}
 
-  list() {
-    return this.todoRepository.list();
-  }
+  list() {}
 }
 
 module.exports = TodoService;
