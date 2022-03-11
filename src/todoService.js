@@ -1,11 +1,33 @@
 class TodoService {
-  constructor({ todoRepository }) {
-    this.todoRepository = todoRepository;
-  }
+	constructor({ todoRepository }) {
+		this.todoRepository = todoRepository;
+	}
 
-  create(data) {}
+	create(todoItem) {
+		if (!todoItem.isValid()) {
+			return {
+				error: {
+					message: 'invalid data',
+					data: todoItem,
+				},
+			};
+		}
 
-  list() {}
+		const { when } = todoItem;
+		const today = new Date();
+		const todo = {
+			...todoItem,
+			status: when > today ? 'pending' : 'late',
+		};
+
+		return this.todoRepository.create(todo);
+	}
+
+	list() {
+		return this.todoRepository
+			.list()
+			.map(({ meta, $loki, ...result }) => result);
+	}
 }
 
 module.exports = TodoService;

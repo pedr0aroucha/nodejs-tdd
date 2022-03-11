@@ -1,42 +1,56 @@
-const { describe, it, before } = require('mocha');
+const { describe, it, beforeEach, afterEach } = require('mocha');
 const { expect } = require('chai');
+const { createSandbox } = require('sinon');
 const Todo = require('../src/todo');
 
 describe('todo', () => {
-  describe('#isValid', () => {
-    it('should return invalid when creating an object without text', () => {
-      const data = {
-        text: '',
-        when: new Date('2020-01-01 00:00:00'),
-      };
+	let sandbox;
+	beforeEach(() => (sandbox = createSandbox()));
+	afterEach(() => sandbox.restore());
 
-      const todo = new Todo(data);
-      const result = todo.isValid();
+	describe('#isValid', () => {
+		it('should return invalid when creating an object without text', () => {
+			const data = {
+				text: '',
+				when: new Date('2020-01-01 00:00:00'),
+			};
+			const todo = new Todo(data);
+			const result = todo.isValid();
+			expect(result).to.be.not.ok;
+		});
+		it('should return invalid when creating an object using "when" property is invalid', () => {
+			const data = {
+				text: 'Hello World',
+				when: new Date('20-01-01'),
+			};
+			const todo = new Todo(data);
+			const result = todo.isValid();
+			expect(result).to.be.not.ok;
+		});
+		it('should have "id", "text", "when" and "status" properties after creating object', () => {
+			const data = {
+				text: 'Hello World',
+				when: new Date('2020-12-01'),
+			};
+			const expectedId = '000001';
 
-      expect(result).to.be.not.ok;
-    });
-    it('should return invalid when creating an object without when', () => {
-      const data = {
-        text: 'Hello World',
-        when: new Date('20-01-01'),
-      };
+			const uuid = require('uuid');
+			const fakeUUID = sandbox.fake.returns(expectedId);
+			sandbox.replace(uuid, 'v4', fakeUUID);
 
-      const todo = new Todo(data);
-      const result = todo.isValid();
+			const todo = new Todo(data);
+			const expectedItem = {
+				text: data.text,
+				when: data.when,
+				status: '',
+				id: expectedId,
+			};
 
-      expect(result).to.be.not.ok;
-    });
-    it('should return invalid when creating an object using "when" propety is invalid', () => {
-      const data = {
-        text: 'Hello World',
-        when: new Date('2020-01-01'),
-      };
+			const result = todo.isValid();
+			expect(result).to.be.ok;
 
-      const todo = new Todo(data);
-      const result = todo.isValid();
-
-      expect(result).to.be.ok;
-    });
-    it('should have "id", "text", "when" and "status" properties after creating object', () => {});
-  });
+			expect(uuid.v4.calledOnce).to.be.ok;
+			expect(todo).to.be.deep.equal(expectedItem);
+		});
+	});
 });
